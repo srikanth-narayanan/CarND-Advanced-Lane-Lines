@@ -6,3 +6,5 @@
 .spyproject/vcs.ini
 
 .spyproject/workspace.ini
+
+*.pyc
