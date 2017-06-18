@@ -82,7 +82,7 @@ class laneDetector(object):
         self.perspect_img = cv2.warpPerspective(self.undist_img, perspect_mat,
                                                 self.image_shape)
 
-    def get_binary_threhold(self, labthresh=(165, 250), luvthresh=(224, 255)):
+    def get_binary_threhold(self, labthresh=(140, 250), luvthresh=(224, 255)):
         '''
         This function generates a binary threhold image using lab and luv.
         Lab detects yellow lines better and Luv detects white lines.
@@ -100,7 +100,7 @@ class laneDetector(object):
         Helper function to get HLS threshold of the image
         '''
         # Convert to HLS Color Space
-        hls = cv2.cvtColor(img, cv2.COLOR_BGR2HLS)
+        hls = cv2.cvtColor(img, cv2.COLOR_RGB2HLS)
         # Apply a threshold to S channel
         s_channel = hls[:, :, 2]
         binary = np.zeros_like(s_channel)
@@ -112,7 +112,7 @@ class laneDetector(object):
         Helper function to get LUV threshold of the image
         '''
         # Convert to LUV Color Space
-        luv = cv2.cvtColor(img, cv2.COLOR_BGR2LUV)
+        luv = cv2.cvtColor(img, cv2.COLOR_RGB2LUV)
         # Apply a threshold to L channel
         l_channel = luv[:, :, 0]
         binary = np.zeros_like(l_channel)
@@ -124,7 +124,7 @@ class laneDetector(object):
         Helper function to get LUV threshold of the image
         '''
         # Convert to LUV Color Space
-        lab = cv2.cvtColor(img, cv2.COLOR_BGR2LAB)
+        lab = cv2.cvtColor(img, cv2.COLOR_RGB2LAB)
         # Apply a threshold to L channel
         # b is for blue-yellow (Since we want to detect yellow lines better)
         b_channel = lab[:, :, 2]
@@ -144,7 +144,7 @@ class laneDetector(object):
         self.get_perspective()
 
         # Identify lanes using binary threhold
-        self.get_binary_threhold()
+        self.get_binary_threhold(labthresh=(140, 200), luvthresh=(215, 255))
 
         # Identify the x and y positions of all nonzero pixels in the image
         nonzero = self.combined_binary.nonzero()
@@ -198,7 +198,7 @@ class laneDetector(object):
         ploty = np.linspace(0, self.combined_binary.shape[0]-1,
                             self.combined_binary.shape[0])
         left_fitx = left_fit[0]*ploty**2 + left_fit[1]*ploty + left_fit[2]
-        self.Left_Lane.fitx = left_fitx[::-1]
+        self.Left_Lane.fitx = left_fitx
 
         ################### Right #####################
         # Smooth of Polynomials
@@ -211,7 +211,7 @@ class laneDetector(object):
 
         # get Right fit x values
         right_fitx = right_fit[0]*ploty**2 + right_fit[1]*ploty + right_fit[2]
-        self.Right_Lane.fitx = right_fitx[::-1]
+        self.Right_Lane.fitx = right_fitx
 
         # Calculate radius of Curvature
         left_radius = self.Left_Lane.getradius(ploty)
@@ -235,7 +235,6 @@ class laneDetector(object):
 
         # Peform Inverse Perspective Transform
         Minv = cv2.getPerspectiveTransform(self.dst, self.src)
-
         # Create an image to draw the lines on
         warp_zero = np.zeros_like(self.combined_binary).astype(np.uint8)
         color_warp = np.dstack((warp_zero, warp_zero, warp_zero))
@@ -246,6 +245,7 @@ class laneDetector(object):
                                                          ploty])))]
         pts_right = np.array(trans_right)
         pts = np.hstack((pts_left, pts_right))
+
         # Draw the lane onto the warped blank image
         cv2.fillPoly(color_warp, np.int_([pts]), (0, 255, 0))
         # Warp the blank back to original image space using
@@ -257,12 +257,12 @@ class laneDetector(object):
         result = cv2.addWeighted(self.undist_img, 1, newwarp, 0.5, 0)
 
         # print vehicle postion
-        font = cv2.FONT_HERSHEY_SIMPLEX
+        font = cv2.FONT_HERSHEY_COMPLEX_SMALL
         cv2.putText(result, 'Vehicle center : {:.2f}m'.format(vehicle_pos), \
                     (100, 80), font, 2, (255,255,255), thickness=2)
         # Print Radius
         cv2.putText(result, 'Lane Curvature : {}m'.
-                    format(avg_radius), (100, 120), font, 2, (255,255,255),
+                    format(avg_radius), (100, 140), font, 2, (255,255,255),
                     thickness=2)
         self.Left_Lane.framecount += 1
         self.Right_Lane.framecount += 1
@@ -309,7 +309,6 @@ class Line():
         # Take a histogram of the bottom half of the image
         bottom_half = np.int(binary_warped.shape[0]/2)
         histogram = np.sum(binary_warped[bottom_half:, :], axis=0)
-        self.test_hist = histogram
 
         # Find the peak of the left and right halves of the histogram
         # These will be the starting point for the left and right lines
