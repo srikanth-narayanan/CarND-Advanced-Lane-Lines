@@ -1,31 +1,29 @@
-## Writeup Template
-
-### You can use this file as a template for your writeup if you want to submit it as a markdown file, but feel free to use some other method and submit a pdf if you prefer.
-
----
-
-**Advanced Lane Finding Project**
-
-The goals / steps of this project are the following:
-
-* Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
-* Apply a distortion correction to raw images.
-* Use color transforms, gradients, etc., to create a thresholded binary image.
-* Apply a perspective transform to rectify binary image ("birds-eye view").
-* Detect lane pixels and fit to find the lane boundary.
-* Determine the curvature of the lane and vehicle position with respect to center.
-* Warp the detected lane boundaries back onto the original image.
-* Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
-
 [//]: # (Image References)
 
-[image1]: ./examples/undistort_output.png "Undistorted"
-[image2]: ./test_images/test1.jpg "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
-[video1]: ./project_video.mp4 "Video"
+[image1]: ./output_images/UNDIST_Image.png "Undistorted Image"
+[image2]: ./output_images/PERSPECTIVE_image.png "Perspective Transform"
+[image3]: ./output_images/L_CHANNEL_binary.png "L_CHANNEL_binary"
+[image4]: ./output_images/B_CHANNEL_binary.png "B_CHANNEL_binary"
+[image5]: ./output_images/COMBI_CHANNEL_binary.png "Undistorted Image"
+[image6]: ./output_images/WINDOW_poly.png "Polynomial Fit"
+[image7]: ./output_images/DETECTED.png "Detected Lanes, Curvature and Vehicle Position"
+
+## Advanced Lane Finding Project
+
+In order to sucessfully detect road lanes and plot the detected driving lane of a vehicle, the following steps are performed
+
+- Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
+- Apply a distortion correction to raw images.
+- Apply a perspective transform to rectify binary image ("Top view of the road").
+- Use color transforms, to create a thresholded binary image.
+- Detect lane pixels and fit to find the lane boundary.
+- Determine the curvature of the lane and vehicle position with respect to center.
+- Warp the detected lane boundaries back onto the original image.
+- Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+
+
+
+
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
 
