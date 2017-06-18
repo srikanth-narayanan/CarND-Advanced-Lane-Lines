@@ -87,16 +87,28 @@ The combined binary images was used to isolate the pixels assocaiated with left 
 
 ### Calculate radius of curvature of the lane & the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+The radius of curvature is calcuated using the formula `Radius of curvature R = ((1+(2Ay+B)^2)^3/2)/|2A|`, where A and B represents the co-efficents of the polynomial. 
+ - The curvature has to be calculated in real world space. So a conversion factor 30 meters per 720 pixesl for y direction and 3.7 meters for 700 pixels in x direction was used.
+ - The radius of curvature for left and right lane was calcuated seperately and averaged for resultant curvature of the lane.
+ 
+ The vehicle postion was calculated based on the assumption, the camera is mounted on the center of the vehicle in x direction.
+ - The mean of left lane and right lane center provides the lane center. The delta between the image center and lane center provide the offset of the vehicle to the lane `vehicle_pos = (img_center - lane_center) * xm_per_pix`. This was converted to real world space using the pixel per meter conversion.
 
 ### Warp Lane Lines and Curvature to Original Image
+ 
+ The final step was to plot the polynomial determined in the warped image and fill the region between the lanes to represent the detected lane. The image was transformed back to undistored image using the inverse matrix of perspective transform. The image was annotated with the radius of curvature and vehicle postion per frame.
 
 ![Detected Lane][image7]
 
 
 ### Pipeline (video)
 
-#### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
+The process used for detecting the lanes and calculating the curvature information was transformed in to a python package. This has two class definition `laneDetector` and `Line`. 
+ - A lane detector class contains the definition to perform camera calibration, image undistort, colourspace threshold calculation and the pipeline for fitting a polynomial.
+ - The Line class defintion carries the attribute of the given line per frame.
+ - In order to create a smooth lane identification and transition between curve and straght scenarious the polynomial is averaged over the last n frames.
+ - The pipeline idetifies if the lane was detected in the previous frame and if detected using that as starting point to search for the lane pixels in the current frame using the `Line.searchfromexisting()` method. If the lane pixels are not idetified it using the moving window based `Line.fulllanesearch()` method.
+ - In the pipeline an object for left lane and right lane was created induvidually to smooth the transition of the lanes while processing the video.
 
 Here's a [link to my video result](./project_video_out.mp4)
  
@@ -106,12 +118,12 @@ Here's a [link to my video result](./project_video_out.mp4)
  |                       [Youtube Link](https://www.youtube.com/watch?v=3HQdlOwGI6k)                     |
 
 
-### Challenge Video
-
-
 ### Areas of Weakness for the pipeline and robustness improvements
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+The lane detection pipeline works most of the time. The pipeline was able to estbalish the lane position for the project video.
+ - In the challenge video the lane detection was smooth all through the video expect for the region at which the bridge appears and the due to the intense shadow effect the warped perspective image lost the quality of lane. Hence further image augumentation is needed to improve the contrast if the lanes for the pipline to identify the lanes perfectly.
+ - Additional challenges would be to fine tune the lane detection pipeline to adverse weather conditions, using additional cameras to detect situations like u turns where one of the lanes can disappear.
+ - Better curve fitting function such as univariate spline or piecewise polynomials can be adapted for fitting the curve.
 
 ### Code Dependencies:
 Python 3.5 and the following dependencies:

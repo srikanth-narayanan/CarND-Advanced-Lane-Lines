@@ -144,7 +144,7 @@ class laneDetector(object):
         self.get_perspective()
 
         # Identify lanes using binary threhold
-        self.get_binary_threhold(labthresh=(140, 200), luvthresh=(215, 255))
+        self.get_binary_threhold()
 
         # Identify the x and y positions of all nonzero pixels in the image
         nonzero = self.combined_binary.nonzero()
