@@ -11,7 +11,7 @@
 
 ## Advanced Lane Finding Project
 
-This project involves building a image processing pipeline to detect road lanes form a center dash caemra of a vehicle. In order to sucessfully detect the road lanes, the following steps are performed
+This project involves building a image processing pipeline to detect road lanes form a center dash camera of a vehicle. In order to sucessfully detect the road lanes, the following steps are performed
 
 - Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
 - Apply a distortion correction to raw images.
@@ -31,23 +31,21 @@ The juypter notebook "Advanced_Lane_Finding.ipynb" contains the implementation o
 
 ### Find Chessboard Corners
 
-Open CV image read function reads images in the RGB colour space as BGR numpy array. Open CV provides a function `cv2.findChessboardCorners()`, this function identifies the chessboard corners using the pin hole camera model. A `cv2.drawChessboardCorners()` provide a visual indetifier for all the corners detected by the camera. The given chessboard images contains a 9 x 6 matrix.
+Open CV image read function reads images in the RGB colour space as BGR numpy array. Open CV provides a function `cv2.findChessboardCorners()`, this function identifies the chessboard corners using the pin hole camera model. A `cv2.drawChessboardCorners()` function provide a visual identifier for all the corners detected by the camera. The given chessboard images contains a 9 x 6 matrix.
 
-The code lines are found in cells 2,3,4,5 and 7
-
-Object points that represent the (x, y, z) co-ordinates in the real world, with z axis contains 0 length. the image points contains the array of detected corners.
+The code lines are found in cells 2, 3, 4, 5 and 7. Object points that represent the (x, y, z) co-ordinates in the real world, with z axis contains 0 length. The image points contains the array of detected corners.
 
 ![Chessboard Corners][image9]
 
 ### Undistort Image
 
-The `objpoints` and `imgpoints` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function. The code lines are found in cells 8, 9 and 10.
+The `objpoints` and `imgpoints` are used to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  This distortion correction is applied to the test image using the `cv2.undistort()` function. The code lines are found in cells 8, 9 and 10.
 
 ![Undistort Image][image1]
 
 ### Perspective Transform
 
-A perspective transform is applied in order to generate a top view a.k.a birds eye view of the road lanes. The region of interest for this pipeline are the vehicle lanes. Hence a specific region of the lanes are identified as source (`src`) and these are warped in to a destination (`dst`) region. the following are the source and destination of choice
+A perspective transform is applied in order to generate a top view a.k.a birds eye view of the road lanes. The region of interest for this pipeline are the vehicle lanes. Hence a specific region of the lanes are identified as source (`src`) and these are warped in to a destination (`dst`) region. The following are the source and destination of choice
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
@@ -62,7 +60,7 @@ The open cv functions `cv2.getPerspectiveTransform` is used to generate the perp
 
 ### Colour transform and binary threshold
 
-The pixels associated with lane lines have to be isolated to detect the lanes better. The colours of the lane lines can be isolated using different colourspace such as `HLS`, `LUV` and `Lab`. 
+The pixels associated with lane lines have to be isolated to fit a polynomial of the curve. The colours of the lane lines can be isolated using different colourspace such as `HLS`, `LUV` and `Lab`. 
  - The image was converted to `Lab` colour space and by using the minimum threhold of 215 and maximum threshold of 255 the yellow line was efficiently isloated from the rest of the image. 
  
 ![B Channel][image4]
@@ -71,7 +69,7 @@ The pixels associated with lane lines have to be isolated to detect the lanes be
  
 ![L Channel][image3]
 
- - A combined binary image of the `LUV` and `LAB` colourspace of the image was able to isolate the lane line. The code lines are the cells 13 to 21.
+ - A combined binary image of the `LUV` and `Lab` colourspace of the image was able to isolate the lane line. The code lines are foudn in the cells 13 to 21.
 
 ![Combined Binary][image5]
 
@@ -105,9 +103,9 @@ The radius of curvature is calcuated using the formula `Radius of curvature R = 
 
 The process used for detecting the lanes and calculating the curvature information was transformed in to a python package. This has two class definition `laneDetector` and `Line`. 
  - A lane detector class contains the definition to perform camera calibration, image undistort, colourspace threshold calculation and the pipeline for fitting a polynomial.
- - The Line class defintion carries the attribute of the given line per frame.
+ - The Line class definition carries the attribute of the given line per frame.
  - In order to create a smooth lane identification and transition between curve and straght scenarious the polynomial is averaged over the last n frames.
- - The pipeline idetifies if the lane was detected in the previous frame and if detected using that as starting point to search for the lane pixels in the current frame using the `Line.searchfromexisting()` method. If the lane pixels are not idetified it using the moving window based `Line.fulllanesearch()` method.
+ - The pipeline identifies if the lane was detected in the previous frame and if detected using that as starting point to search for the lane pixels in the current frame using the `Line.searchfromexisting()` method. If the lane pixels are not identified, a moving window based `Line.fulllanesearch()` method is used.
  - In the pipeline an object for left lane and right lane was created induvidually to smooth the transition of the lanes while processing the video.
 
 Here's a [link to my video result](./project_video_out.mp4)
@@ -121,8 +119,8 @@ Here's a [link to my video result](./project_video_out.mp4)
 ### Areas of Weakness for the pipeline and robustness improvements
 
 The lane detection pipeline works most of the time. The pipeline was able to estbalish the lane position for the project video.
- - In the challenge video the lane detection was smooth all through the video expect for the region at which the bridge appears and the due to the intense shadow effect the warped perspective image lost the quality of lane. Hence further image augumentation is needed to improve the contrast if the lanes for the pipline to identify the lanes perfectly.
- - Additional challenges would be to fine tune the lane detection pipeline to adverse weather conditions, using additional cameras to detect situations like u turns where one of the lanes can disappear.
+ - In the challenge video the lane detection was smooth all through the video expect for the region at which the bridge appears and due to the intense shadow effect the warped perspective image lost the quality of lane. Hence further image augumentation is needed to improve the contrast if the lanes for the pipeline to identify the lanes perfectly.
+ - Additional challenges would be to fine tune the lane detection pipeline to adverse weather conditions, using additional cameras to detect situations like u turns where one of the lanes can disappear due to field of view.
  - Better curve fitting function such as univariate spline or piecewise polynomials can be adapted for fitting the curve.
 
 ### Code Dependencies:
