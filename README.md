@@ -62,22 +62,27 @@ The open cv functions `cv2.getPerspectiveTransform` is used to generate the perp
 
 ### Colour transform and binary threshold
 
-The pixels associated with lane lines have to be isolated to detect the lanes better. The colours of the lane lines can be isolated using different colourspace such as `HLS`, `LUV` and `Lab`. The image was converted to `Lab` colour space and by using the right amount of threshold values the yellow line was efficiently isloated from the rest of the image. 
+The pixels associated with lane lines have to be isolated to detect the lanes better. The colours of the lane lines can be isolated using different colourspace such as `HLS`, `LUV` and `Lab`. 
+ - The image was converted to `Lab` colour space and by using the minimum threhold of 215 and maximum threshold of 255 the yellow line was efficiently isloated from the rest of the image. 
  
 ![B Channel][image4]
  
- The `LUV` colourspace was efficient in isolating the white lanes efficiently. 
+ - The `LUV` colourspace was efficient in isolating the white lanes efficiently with min and max threshold of 145 and 200 respectively. 
  
 ![L Channel][image3]
 
- A combined binary image of the `LUV` and `LAB` colourspace of the image was able to isolate the lane line. The code lines are the cells 13 to 21.
+ - A combined binary image of the `LUV` and `LAB` colourspace of the image was able to isolate the lane line. The code lines are the cells 13 to 21.
 
 ![Combined Binary][image5]
 
 ### Detect lane-line pixels and fit their positions with a polynomial
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
-
+The combined binary images was used to isolate the pixels assocaiated with left lane and right lane. This was achieved by the following steps,
+ - Calculating the histogram of the pixles in the combined binary image.
+ - Use a sliding window starting from the bottom of the image to find the position of peak of the histogram to isolate start point for left and right lane.
+ - Identify all the non zero pixels within a given windows area using the `numpy.nonzero()` function and `append` it to a numpy array for left and right lane seperately.
+ - A polynomial was fit to the left and right lane pixels using `numpy.polyfit()` function.
+ 
 ![Polynomial Fit][image6]
 
 ### Calculate radius of curvature of the lane & the position of the vehicle with respect to center.
@@ -95,7 +100,7 @@ I did this in lines # through # in my code in `my_other_file.py`
 
 Here's a [link to my video result](./project_video_out.mp4)
  
- |						   Lane Detection with Curavture and Position                                    |
+ |						   Lane Detection with Curavture and Vehicle Position                            |
  |:-----------------------------------------------------------------------------------------------------:|
  |[![Lane Detection](./output_images/image4youtubelink.png)](https://www.youtube.com/watch?v=3HQdlOwGI6k)|
  |                       [Youtube Link](https://www.youtube.com/watch?v=3HQdlOwGI6k)                     |
@@ -107,3 +112,10 @@ Here's a [link to my video result](./project_video_out.mp4)
 ### Areas of Weakness for the pipeline and robustness improvements
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+
+### Code Dependencies:
+Python 3.5 and the following dependencies:
+ - [NumPy](http://www.numpy.org/)
+ - [matplotlib](http://matplotlib.org/)
+ - [OpenCV](http://opencv.org/)
+ - [MoviePy](http://zulko.github.io/moviepy/)
