@@ -22,6 +22,9 @@ This project involves building a image processing pipeline to detect road lanes 
 - Determine the curvature of the lane and vehicle position with respect to center.
 - Warp the detected lane boundaries back onto the original image.
 - Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+ 
+![Lane Detection](https://github.com/srikanth-narayanan/CarND-Advanced-Lane-Lines/blob/master/output_images/LANE.gif)
+
 
 ## Organisation of the code
 
@@ -72,26 +75,20 @@ The pixels associated with lane lines have to be isolated to detect the lanes be
 
 ![Combined Binary][image5]
 
-
-
-
-#### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
+### Detect lane-line pixels and fit their positions with a polynomial
 
 Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
 
 ![alt text][image5]
 
-#### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+### Calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
 I did this in lines # through # in my code in `my_other_file.py`
 
-#### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
-
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+### Warp Lane Lines and Curvature to Original Image
 
 ![alt text][image6]
 
----
 
 ### Pipeline (video)
 
@@ -99,10 +96,10 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 Here's a [link to my video result](./project_video.mp4)
 
----
 
-### Discussion
+### Challenge Video
 
-#### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
+
+### Areas of Weakness for the pipeline and robustness improvements
 
 Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
