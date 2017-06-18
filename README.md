@@ -7,7 +7,6 @@
 [image5]: ./output_images/COMBI_CHANNEL_binary.png "Combined Binary"
 [image6]: ./output_images/WINDOW_poly.png "Polynomial Fit"
 [image7]: ./output_images/DETECTED.png "Detected Lanes, Curvature and Vehicle Position"
-[image8]: ./output_images/DETECTED.png "Detected Lanes, Curvature and Vehicle Position"
 [image9]: ./output_images/camera_calib.png "Camera Calibration"
 
 ## Advanced Lane Finding Project
@@ -79,22 +78,27 @@ The pixels associated with lane lines have to be isolated to detect the lanes be
 
 Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
 
-![alt text][image5]
+![Polynomial Fit][image6]
 
-### Calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
+### Calculate radius of curvature of the lane & the position of the vehicle with respect to center.
 
 I did this in lines # through # in my code in `my_other_file.py`
 
 ### Warp Lane Lines and Curvature to Original Image
 
-![alt text][image6]
+![Detected Lane][image7]
 
 
 ### Pipeline (video)
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+Here's a [link to my video result](./project_video_out.mp4)
+ 
+ |						   Lane Detection with Curavture and Position                                    |
+ |:-----------------------------------------------------------------------------------------------------:|
+ |[![Lane Detection](./output_images/image4youtubelink.png)](https://www.youtube.com/watch?v=3HQdlOwGI6k)|
+ |                       [[Youtube Link](https://www.youtube.com/watch?v=3HQdlOwGI6k                     |
 
 
 ### Challenge Video
