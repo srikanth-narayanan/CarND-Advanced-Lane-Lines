@@ -4,7 +4,7 @@
 [image2]: ./output_images/PERSPECTIVE_image.png "Perspective Transform"
 [image3]: ./output_images/L_CHANNEL_binary.png "L_CHANNEL_binary"
 [image4]: ./output_images/B_CHANNEL_binary.png "B_CHANNEL_binary"
-[image5]: ./output_images/COMBI_CHANNEL_binary.png "Undistorted Image"
+[image5]: ./output_images/COMBI_CHANNEL_binary.png "Combined Binary"
 [image6]: ./output_images/WINDOW_poly.png "Polynomial Fit"
 [image7]: ./output_images/DETECTED.png "Detected Lanes, Curvature and Vehicle Position"
 [image8]: ./output_images/DETECTED.png "Detected Lanes, Curvature and Vehicle Position"
@@ -60,41 +60,20 @@ The open cv functions `cv2.getPerspectiveTransform` is used to generate the perp
 
 ### Colour transform and binary threshold
 
-The pixels associated with lane lines have to be isolated to detect the lanes better
+The pixels associated with lane lines have to be isolated to detect the lanes better. The colours of the lane lines can be isolated using different colourspace such as `HLS`, `LUV` and `Lab`. The image was converted to `Lab` colour space and by using the right amount of threshold values the yellow line was efficiently isloated from the rest of the image. 
+ 
+![B Channel][image4]
+ 
+ The `LUV` colourspace was efficient in isolating the white lanes efficiently. 
+ 
+![L Channel][image3]
+
+ A combined binary image of the `LUV` and `LAB` colourspace of the image was able to isolate the lane line. The code lines are the cells 13 to 21.
+
+![Combined Binary][image5]
 
 
 
-
-
-#### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
-
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
-
-```python
-src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
-dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
-```
-
-This resulted in the following source and destination points:
-
-| Source        | Destination   | 
-|:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
-
-I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
-
-![alt text][image4]
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
