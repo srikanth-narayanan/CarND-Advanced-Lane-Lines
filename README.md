@@ -31,7 +31,7 @@ The juypter notebook "Advanced_Lane_Finding.ipynb" contains the implementation o
 
 Open CV image read function reads images in the RGB colour space as BGR numpy array. Open CV provides a function `cv2.findChessboardCorners()`, this function identifies the chessboard corners using the pin hole camera model. A `cv2.drawChessboardCorners()` provide a visual indetifier for all the corners detected by the camera. The given chessboard images contains a 9 x 6 matrix.
 
-The code for this step is contained in the first code cell of the juypter notebook located in 2,3,4,5 and 7
+The code lines are found in cells 2,3,4,5 and 7
 
 Object points that represent the (x, y, z) co-ordinates in the real world, with z axis contains 0 length. the image points contains the array of detected corners.
 
@@ -43,18 +43,28 @@ The `objpoints` and `imgpoints` to compute the camera calibration and distortion
 
 ![Undistort Image][image1]
 
-### Pipeline (single images)
+### Perspective Transform
 
-#### 1. Provide an example of a distortion-corrected image.
+A perspective transform is applied in order to generate a top view a.k.a birds eye view of the road lanes. The region of interest for this pipeline are the vehicle lanes. Hence a specific region of the lanes are identified as source (`src`) and these are warped in to a destination (`dst`) region. the following are the source and destination of choice
 
-To demonstrate this step, I will describe how I apply the distortion correction to one of the test images like this one:
-![alt text][image2]
+| Source        | Destination   | 
+|:-------------:|:-------------:| 
+| 490, 480      | 0, 0          | 
+| 810, 480      | 1280, 0       |
+| 1250, 720     | 1250, 720     |
+| 100, 720      | 100, 720      |
 
-#### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
+The open cv functions `cv2.getPerspectiveTransform` is used to generate the perpective transform and `cv2.warpPerspective` is used to generate the warped image. All these code are built in a function called `getperspective()`. The code lines are in cells 11, 12 and 13.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+![Perspective transformed][image2]
 
-![alt text][image3]
+### Colour transform and binary threshold
+
+The pixels associated with lane lines have to be isolated to detect the lanes better
+
+
+
+
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
