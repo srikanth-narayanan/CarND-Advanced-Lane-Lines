@@ -98,7 +98,7 @@ Here's a [link to my video result](./project_video_out.mp4)
  |						   Lane Detection with Curavture and Position                                    |
  |:-----------------------------------------------------------------------------------------------------:|
  |[![Lane Detection](./output_images/image4youtubelink.png)](https://www.youtube.com/watch?v=3HQdlOwGI6k)|
- |                       [[Youtube Link](https://www.youtube.com/watch?v=3HQdlOwGI6k                     |
+ |                       [Youtube Link](https://www.youtube.com/watch?v=3HQdlOwGI6k)                     |
 
 
 ### Challenge Video
