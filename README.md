@@ -33,13 +33,13 @@ The juypter notebook "Advanced_Lane_Finding.ipynb" contains the implementation o
 
 Open CV image read function reads images in the RGB colour space as BGR numpy array. Open CV provides a function `cv2.findChessboardCorners()`, this function identifies the chessboard corners using the pin hole camera model. A `cv2.drawChessboardCorners()` function provide a visual identifier for all the corners detected by the camera. The given chessboard images contains a 9 x 6 matrix.
 
-The code lines are found in cells 2, 3, 4, 5 and 7. Object points that represent the (x, y, z) co-ordinates in the real world, with z axis contains 0 length. The image points contains the array of detected corners.
+The code lines are found in cells 2, 3, 4, 5, 6 and 7. Object points that represent the (x, y, z) co-ordinates in the real world, with z axis contains 0 length. The image points contains the array of detected corners.
 
 ![Chessboard Corners][image9]
 
 ### Undistort Image
 
-The `objpoints` and `imgpoints` are used to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  This distortion correction is applied to the test image using the `cv2.undistort()` function. The code lines are found in cells 8, 9 and 10.
+The `objpoints` and `imgpoints` are used to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  This distortion correction is applied to the test image using the `cv2.undistort()` function. The code lines are found in cells 7, 8 and 9.
 
 ![Undistort Image][image1]
 
@@ -49,23 +49,23 @@ A perspective transform is applied in order to generate a top view a.k.a birds e
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 490, 480      | 0, 0          | 
-| 810, 480      | 1280, 0       |
-| 1250, 720     | 1250, 720     |
-| 100, 720      | 100, 720      |
+| 575, 465      | 450, 0        | 
+| 705, 465      | 830, 0        |
+| 1050, 685     | 830, 720      |
+| 260, 685      | 450, 720      |
 
-The open cv functions `cv2.getPerspectiveTransform` is used to generate the perpective transform and `cv2.warpPerspective` is used to generate the warped image. All these code are built in a function called `getperspective()`. The code lines are in cells 11, 12 and 13.
+The open cv functions `cv2.getPerspectiveTransform` is used to generate the perpective transform and `cv2.warpPerspective` is used to generate the warped image. All these code are built in a function called `getperspective()`. The code lines are in cells 10, 11 and 12.
 
 ![Perspective transformed][image2]
 
 ### Colour transform and binary threshold
 
 The pixels associated with lane lines have to be isolated to fit a polynomial of the curve. The colours of the lane lines can be isolated using different colourspace such as `HLS`, `LUV` and `Lab`. 
- - The image was converted to `Lab` colour space and by using the minimum threhold of 215 and maximum threshold of 255 the yellow line was efficiently isloated from the rest of the image. 
+ - The image was converted to `Lab` colour space and by using the minimum threhold of 220 and maximum threshold of 255 the yellow line was efficiently isloated from the rest of the image. 
  
 ![B Channel][image4]
  
- - The `LUV` colourspace was efficient in isolating the white lanes efficiently with min and max threshold of 145 and 200 respectively. 
+ - The `LUV` colourspace was efficient in isolating the white lanes efficiently with min and max threshold of 190 and 255 respectively. 
  
 ![L Channel][image3]
 
@@ -86,7 +86,7 @@ The combined binary images was used to isolate the pixels assocaiated with left 
 ### Calculate radius of curvature of the lane & the position of the vehicle with respect to center.
 
 The radius of curvature is calcuated using the formula `Radius of curvature R = ((1+(2Ay+B)^2)^3/2)/|2A|`, where A and B represents the co-efficents of the polynomial. 
- - The curvature has to be calculated in real world space. So a conversion factor 30 meters per 720 pixesl for y direction and 3.7 meters for 700 pixels in x direction was used.
+ - The curvature has to be calculated in real world space. So a conversion factor for y direction and x direction was used.
  - The radius of curvature for left and right lane was calcuated seperately and averaged for resultant curvature of the lane.
  
  The vehicle postion was calculated based on the assumption, the camera is mounted on the center of the vehicle in x direction.
@@ -105,15 +105,15 @@ The process used for detecting the lanes and calculating the curvature informati
  - A lane detector class contains the definition to perform camera calibration, image undistort, colourspace threshold calculation and the pipeline for fitting a polynomial.
  - The Line class definition carries the attribute of the given line per frame.
  - In order to create a smooth lane identification and transition between curve and straght scenarious the polynomial is averaged over the last n frames.
- - The pipeline identifies if the lane was detected in the previous frame and if detected using that as starting point to search for the lane pixels in the current frame using the `Line.searchfromexisting()` method. If the lane pixels are not identified, a moving window based `Line.fulllanesearch()` method is used.
+ - The pipeline identifies if the lane was detected in the previous frame and if detected using that as starting point to search for the lane pixels in the current frame using the `Line.new_exist_search()` method. If the lane pixels are not identified, a moving window based `Line.fulllanesearch()` method is used.
  - In the pipeline an object for left lane and right lane was created induvidually to smooth the transition of the lanes while processing the video.
 
 Here's a [link to my video result](./project_video_out.mp4)
  
  |						   Lane Detection with Curavture and Vehicle Position                            |
  |:-----------------------------------------------------------------------------------------------------:|
- |[![Lane Detection](./output_images/image4youtubelink.png)](https://www.youtube.com/watch?v=3HQdlOwGI6k)|
- |                       [Youtube Link](https://www.youtube.com/watch?v=3HQdlOwGI6k)                     |
+ |[![Lane Detection](./output_images/image4youtubelink.png)](https://www.youtube.com/watch?v=yVvluFzy8yU)|
+ |                       [Youtube Link](https://www.youtube.com/watch?v=yVvluFzy8yU)                     |
 
 
 ### Areas of Weakness for the pipeline and robustness improvements

@@ -20,7 +20,7 @@ class laneDetector(object):
     methods and process need to perform lane detection
     '''
     def __init__(self, srcpoint, dstpoint, chessvertical=6, chesshorizontal=9,
-                 window=9, margin=100, minpix=50):
+                 window=9, margin=80, minpix=40):
         '''
         Constructor to intialise the object variables
         '''
@@ -69,9 +69,12 @@ class laneDetector(object):
         A method to undistort an image using camera calibration
         '''
         self.image_shape = (self.image.shape[1], self.image.shape[0])
-        ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(self.objpoints, self.imgpoints, self.image_shape, None, None)
+        ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(self.objpoints,
+                                                           self.imgpoints,
+                                                           self.image_shape,
+                                                           None, None)
         undist = cv2.undistort(self.image, mtx, dist, None, mtx)
-        
+
         return undist
 
     def get_perspective(self):
@@ -82,7 +85,7 @@ class laneDetector(object):
         self.perspect_img = cv2.warpPerspective(self.undist_img, perspect_mat,
                                                 self.image_shape)
 
-    def get_binary_threhold(self, labthresh=(140, 250), luvthresh=(224, 255)):
+    def get_binary_threhold(self, labthresh=(190, 255), luvthresh=(220, 255)):
         '''
         This function generates a binary threhold image using lab and luv.
         Lab detects yellow lines better and Luv detects white lines.
@@ -153,16 +156,15 @@ class laneDetector(object):
 
         if self.Left_Lane.detected:  # Search from previous found lane
             leftx, lefty, self.Left_Lane.detected = \
-                self.Left_Lane.searchfromexisting(nonzerox, nonzeroy,
-                                                  self.nwindows,
-                                                  self.combined_binary,
-                                                  self.margin, self.minpix)
+                self.Left_Lane.new_exist_search(nonzerox, nonzeroy,
+                                                self.combined_binary,
+                                                self.margin)
         if self.Right_Lane.detected:  # Search from previous found lane
             rightx, righty, self.Right_Lane.detected = \
-                self.Right_Lane.searchfromexisting(nonzerox, nonzeroy,
-                                                   self.nwindows,
-                                                   self.combined_binary,
-                                                   self.margin, self.minpix)
+                self.Right_Lane.new_exist_search(nonzerox, nonzeroy,
+                                                 self.combined_binary,
+                                                 self.margin)
+
         if not self.Left_Lane.detected:  # Peform Full Search
             leftx, lefty, self.Left_Lane.detected = \
                 self.Left_Lane.fulllanesearch(nonzerox, nonzeroy,
@@ -180,7 +182,7 @@ class laneDetector(object):
         self.Left_Lane.y = lefty
         self.Right_Lane.x = rightx
         self.Right_Lane.y = righty
-        
+
         # Fit a second order polynomial to each
         left_fit = np.polyfit(lefty, leftx, 2)
         right_fit = np.polyfit(righty, rightx, 2)
@@ -223,10 +225,12 @@ class laneDetector(object):
         if self.Left_Lane.framecount % 5 == 0:
             self.Left_Lane.radius = left_radius
             self.Right_Lane.radius = right_radius
+        self.Left_Lane.radius = left_radius
+        self.Right_Lane.radius = right_radius
 
         # Get vehicle position
         # Assumption camera in the center
-        xm_per_pix = 3.7 / 700  # meters per pixel in x dimension
+        xm_per_pix = 3.7 / 378  # meters per pixel in x dimension
         lmean = np.mean(left_fitx)
         rmean = np.mean(right_fitx)
         lane_center = np.mean([lmean, rmean])
@@ -258,11 +262,11 @@ class laneDetector(object):
 
         # print vehicle postion
         font = cv2.FONT_HERSHEY_COMPLEX_SMALL
-        cv2.putText(result, 'Vehicle center : {:.2f}m'.format(vehicle_pos), \
-                    (100, 80), font, 2, (255,255,255), thickness=2)
+        cv2.putText(result, 'Vehicle center : {:.2f}m'.format(vehicle_pos),
+                    (100, 80), font, 2, (255, 255, 255), thickness=2)
         # Print Radius
         cv2.putText(result, 'Lane Curvature : {}m'.
-                    format(avg_radius), (100, 140), font, 2, (255,255,255),
+                    format(avg_radius), (100, 140), font, 2, (255, 255, 255),
                     thickness=2)
         self.Left_Lane.framecount += 1
         self.Right_Lane.framecount += 1
@@ -313,11 +317,12 @@ class Line():
         # Find the peak of the left and right halves of the histogram
         # These will be the starting point for the left and right lines
         midpoint = np.int(histogram.shape[0]/2)
+        half_mid = np.int(midpoint/2)
 
         if self.lanetype == "Left":
-            base = np.argmax(histogram[:midpoint])
+            base = np.argmax(histogram[half_mid:midpoint]) + half_mid
         elif self.lanetype == "Right":
-            base = np.argmax(histogram[midpoint:]) + midpoint
+            base = np.argmax(histogram[midpoint:midpoint+half_mid]) + midpoint
         else:
             raise Exception("Unknown Lane Type")
 
@@ -363,6 +368,31 @@ class Line():
         else:
             x = self.x
             y = self.y
+
+        return x, y, self.detected
+
+    def new_exist_search(self, nonzerox, nonzeroy, binary_warped, margin):
+        '''
+        A better method to find new lanes if previous lane was found
+        '''
+        lane_inds = ((nonzerox > (np.mean(self.fit_coeff0)*(nonzeroy**2) +
+                                  np.mean(self.fit_coeff1)*nonzeroy +
+                                  np.mean(self.fit_coeff2) - margin)) &
+                     (nonzerox < (np.mean(self.fit_coeff0)*(nonzeroy**2) +
+                                  np.mean(self.fit_coeff1)*nonzeroy +
+                                  np.mean(self.fit_coeff2) + margin)))
+
+        # Again, extract left and right line pixel positions
+        x = nonzerox[lane_inds]
+        y = nonzeroy[lane_inds]
+
+        # check if values are found
+        if np.sum(x) > 0:
+            self.detected = True
+        else:
+            x = self.x
+            y = self.y
+            self.detected = False
 
         return x, y, self.detected
 
@@ -427,8 +457,8 @@ class Line():
         method to get radius of curvature
         '''
         # Define conversions in x and y from pixels space to meters
-        ym_per_pix = 30 / 720  # meters per pixel in y dimension
-        xm_per_pix = 3.7 / 700  # meters per pixel in x dimension
+        ym_per_pix = 3.048 / 100  # meters per pixel in y dimension
+        xm_per_pix = 3.7 / 378  # meters per pixel in x dimension
 
         fit_cr = np.polyfit(ploty*ym_per_pix, self.fitx*xm_per_pix, 2)
         y_eval = np.max(ploty)
@@ -438,4 +468,3 @@ class Line():
 
 if __name__ == "__main__":
     pass
-    
