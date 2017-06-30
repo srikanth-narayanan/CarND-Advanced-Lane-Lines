@@ -252,6 +252,10 @@ class laneDetector(object):
 
         # Draw the lane onto the warped blank image
         cv2.fillPoly(color_warp, np.int_([pts]), (0, 255, 0))
+        cv2.polylines(color_warp, np.int32([pts_left]), isClosed=False,
+                      color=(255,0,255), thickness=10)
+        cv2.polylines(color_warp, np.int32([pts_right]), isClosed=False,
+                      color=(0,255,255), thickness=10)
         # Warp the blank back to original image space using
         # inverse perspective matrix (Minv)
         newwarp = cv2.warpPerspective(color_warp, Minv,
@@ -270,6 +274,8 @@ class laneDetector(object):
                     thickness=2)
         self.Left_Lane.framecount += 1
         self.Right_Lane.framecount += 1
+
+        self.temp_image = result
 
         return result
 
